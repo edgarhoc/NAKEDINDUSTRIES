@@ -1,0 +1,82 @@
+seleccione materia, industria, cuenta () / (seleccione cuenta () de empresas donde industria en (seleccione industria distinta de empresas)) como proba de empresas donde materia en (seleccione materia distinta de empresas) grupo por materia, industria
+
+prolog ++++++++++++++++++++++++++++++++++++++++++
+
+jproba: -write ('{"jproba":'), arbol, write ('}').
+ arbol: -write ('{"nbarbol": "'), read (Nbarbol), write (Nbarbol), write ('", "frecuencia":'), frecuencia (Nbarbol), write ('}').
+ frecuencia (Nbarbol): - escribir ('"seleccionar cuenta (*) de'), escribir (Nbarbol), escribir (';"'), escribir (','), dimensión (Nbarbol).
+ dimension (Nbarbol): - write ('{"nbdimension": "'), read (Nbdimension), write (Nbdimension), write ('",'), puerta (Nbarbol, Nbdimension).
+ puerta (Nbarbol, Nbdimension): - write ('"select'), write (Nbdimension), read (Dim), write (','), write (Dim),
+ write (', count () / (select count ()'), write ('from'), write (Nbarbol), write ('where'),
+ escribir (Dim), escribir ('en (seleccionar distinto'),
+ write (Dim), write ('from'), write (Nbarbol), write ('))'), write ('as proba from'), write (Nbarbol), write ('where'), write (Nbdimension) ,
+ escribir ('en (seleccionar distinto'), escribir (Nbdimension), escribir ('from'), escribir (Nbarbol), escribir (') agrupar por'), escribir (Nbdimension), escribir (','), escribir ( Dim), escriba (';').
+ : -jproba.
+
+consola+++++++++++++++++++++++++++++++++++++++++++
+
+empresas.
+materia.
+industria
+
+cadena++++++++++++++++++++++++++++++++++++++++++
+
+{"jproba": {"nbarbol": "empresas", "frecuencia": "select count () from empresas;", {"nbdimension": "materia", "select materia, industria, count () / (select count (*) de empresas donde industria en (seleccione industria distinta de empresas)) como proba de empresas donde materia en (seleccione materia distinta de empresas) grupo por materia, industria;}}
+
+
+Consulatas++++++++++++++++++++++++++++++++++++++++
+
+create procedure pr_industria
+@ind varchar (20)
+as 
+select materia, idembarque, idinsumo 
+from embarques, financieras
+where embarques.boleta = financieras.boleta and financieras.industria = @ind
+
+ execute pr_industria 'A';
+ execute pr_industria 'B';
+ execute pr_industria 'C';
+ execute pr_industria 'D';
+
+create view v_sumatotal as(
+select materia, count(capital_social) as total_capital, avg(capital_social) as promedio
+from financieras
+group by materia
+);
+
+select * from v_sumatotal
+
+
+select industria, boleta,  max(capital_social) as Mayor_capital
+from financieras 
+
+
+
+create view Mayor_capital as(
+select industria, max(capital_social) as Mayor_capital
+from financieras 
+group by industria
+);
+
+select * from Mayor_capital
+
+create view sumacapital as(
+select industria, sum(capital_social) as Mayor_capital
+from financieras 
+group by industria
+);
+
+select * from sumacapital;
+
+create procedure pro_bsumcap
+@ind varchar (20)
+as
+select industria, sum(capital_social) as Mayor_capital
+from financieras 
+where industria = @ind
+group by industria
+
+execute pro_bsumcap 'A';
+execute pro_bsumcap 'B';
+execute pro_bsumcap 'C';
+execute pro_bsumcap 'D';
